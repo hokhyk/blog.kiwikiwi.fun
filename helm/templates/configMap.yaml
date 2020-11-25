@@ -22,3 +22,20 @@ data:
             include        fastcgi_params;
         }
     }
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: prometheus
+data:
+  config: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: 'node_exporter_metrics'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['{{ .Values.ip }}:9100']
