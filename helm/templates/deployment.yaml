@@ -147,4 +147,38 @@ spec:
           image: prom/prometheus:v2.22.2
           volumeMounts:
             - name: config
-              mountPath: /etc/prometheus/prometheus.yml
+              mountPath: /etc/prometheus
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-deployment
+  namespace: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: grafana-config
+            items:
+              - key: config
+                path: custom.ini
+      containers:
+        - name: grafana
+          image: grafana/grafana:7.3.4
+          volumeMounts:
+            - name: config
+              mountPath: /etc/grafana/custom.ini
+              subPath: custom.ini

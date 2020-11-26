@@ -26,3 +26,65 @@ spec:
             backend:
               serviceName: nginx-service
               servicePort: 80
+
+---
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus-ingress
+  namespace: prometheus
+  {{- if .Values.tls }}
+  annotations:
+    ingress.kubernetes.io/force-hsts: "true"
+    ingress.kubernetes.io/hsts-max-age: "63072000"
+    ingress.kubernetes.io/hsts-include-subdomains: "true"
+    ingress.kubernetes.io/hsts-preload: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+  {{- end }}
+spec:
+  {{- if .Values.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.host }}
+      secretName: secret-tls
+  {{- end }}
+  rules:
+    - host: {{ .Values.host }}
+      http:
+        paths:
+          - path: /prometheus
+            backend:
+              serviceName: prometheus-service
+              servicePort: 9090
+
+---
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: grafana
+  {{- if .Values.tls }}
+  annotations:
+    ingress.kubernetes.io/force-hsts: "true"
+    ingress.kubernetes.io/hsts-max-age: "63072000"
+    ingress.kubernetes.io/hsts-include-subdomains: "true"
+    ingress.kubernetes.io/hsts-preload: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+  {{- end }}
+spec:
+  {{- if .Values.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.host }}
+      secretName: secret-tls
+  {{- end }}
+  rules:
+    - host: {{ .Values.host }}
+      http:
+        paths:
+          - path: /grafana
+            backend:
+              serviceName: grafana-service
+              servicePort: 3000
