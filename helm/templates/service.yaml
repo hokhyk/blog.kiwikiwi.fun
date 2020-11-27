@@ -70,7 +70,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus-service
-  namespace: prometheus
+  namespace: blog
   labels:
     app: prometheus
 spec:
@@ -87,7 +87,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: grafana-service
-  namespace: grafana
+  namespace: blog
   labels:
     app: grafana
 spec:
